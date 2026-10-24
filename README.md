@@ -30,7 +30,7 @@ Fonte: https://www.kaggle.com/datasets/itsrohithere/renewable-energy-production-
 
 Com base na matriz de correlação gerada e na ordenação das correlações absolutas com a variável-alvo `Energy_Class`, podemos realizar as seguintes observações:
 
-por matriz de correlação aki
+![Matriz de Correlação](images/matriz_correlacao.png)
 
 Associações com o alvo, ordenadas pela magnitude absoluta.
 
@@ -82,7 +82,31 @@ Resumo das métricas nos dois cenários:
 | Cenário 1 (60/40) | 60 | 40 | 600 | 400 | 0.752 | 0.755 | 0.724 | 0.487 |
 | Cenário 2 (85/15) | 85 | 15 | 850 | 150 | 0.773 | 0.776 | 0.732 | 0.487 |
 
-por matriz de confusão aki
+![Matriz de Confusão](images/matriz_confusao.png)
+
+Relatório por classe - Cenário 1 (60/40)
+
+|                  | **precision** | **recall** | **f1-score** | **support** |
+|-----------------:|--------------:|-----------:|-------------:|------------:|
+|          **Low** |         0.829 |      0.479 |        0.607 |        71.0 |
+|       **Medium** |         0.659 |      0.634 |        0.646 |       134.0 |
+|         **High** |         0.800 |      0.944 |        0.866 |       195.0 |
+|    **macro avg** |         0.763 |      0.686 |        0.706 |       400.0 |
+| **weighted avg** |         0.758 |      0.758 |        0.746 |       400.0 |
+|     **accuracy** |               |            |        0.758 |       400.0 |
+
+Relatório por classe — Cenário 2 (85/15)
+
+|                  | **precision** | **recall** | **f1-score** | **support** |
+|-----------------:|--------------:|-----------:|-------------:|------------:|
+|          **Low** |         0.783 |      0.667 |        0.720 |        27.0 |
+|       **Medium** |         0.689 |      0.620 |        0.653 |        50.0 |
+|         **High** |         0.829 |      0.932 |        0.877 |        73.0 |
+|    **macro avg** |         0.767 |      0.739 |        0.750 |       150.0 |
+| **weighted avg** |         0.774 |      0.780 |        0.774 |       150.0 |
+|     **accuracy** |               |            |        0.780 |       150.0 |
+
+![Métricas por Cenários](images/metricas_cenarios.png)
 
 A avaliação do cenário 85/15 mostrou acurácia maior neste particionamento. Isso pode estar relacionado ao maior volume de treino, mas a comparação também depende da amostra de teste e não prova, por si só, que a proporção 85/15 seja sempre melhor.
 
@@ -94,7 +118,7 @@ A escolha da proporção entre dados de treino e teste representa um clássico b
 
 ---
 
-### 1. Conjunto de Teste Menor (ex: 15% de teste / 85% de treino)
+### Conjunto de Teste Menor (ex: 15% de teste / 85% de treino)
 
 *   **Vantagens:**
     *   **Mais dados para o treinamento:** O modelo tem acesso a uma maior quantidade e diversidade de exemplos para ajustar seus pesos e interceptos. Em datasets pequenos (como o nosso, com 1000 amostras), dispor de 850 dados de treino em vez de 600 é uma vantagem expressiva que permite ao estimador capturar melhor os padrões reais dos dados.
@@ -106,7 +130,7 @@ A escolha da proporção entre dados de treino e teste representa um clássico b
 
 ---
 
-### 2. Conjunto de Teste Maior (ex: 40% de teste / 60% de treino)
+### Conjunto de Teste Maior (ex: 40% de teste / 60% de treino)
 
 *   **Vantagens:**
     *   **Avaliação de performance altamente confiável e estável:** Avaliar o modelo com 400 amostras (Cenário 1) garante um cálculo de métricas muito mais representativo da realidade de produção. A variância do estimador da métrica de teste é menor, significando que o resultado obtido é estatisticamente mais próximo do erro real do modelo.
