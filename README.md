@@ -4,7 +4,6 @@
 
 | Nome completo | RM |
 | --- | --- |
-
 | Augusto de Souza Avila | 570839 |
 | Davi Simoncelo | 571738 |
 | João Pedro Sousa | 573962 |
