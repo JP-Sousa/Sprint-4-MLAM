@@ -108,17 +108,51 @@ Relatório por classe — Cenário 2 (85/15)
 
 ![Métricas por Cenários](images/metricas_cenarios.png)
 
+Comparação direta (85/15 menos 60/40)
+
+| Métrica | Cenário 1 (60/40) | Cenário 2 (85/15) | Diferença |
+|---|---:|---:|---:|
+| Acurácia | 0.752 | 0.773 | +0.021 |
+| Precisão macro | 0.755 | 0.776 | +0.022 |
+| Recall macro | 0.724 | 0.732 | +0.008 |
+
 A avaliação do cenário 85/15 mostrou acurácia maior neste particionamento. Isso pode estar relacionado ao maior volume de treino, mas a comparação também depende da amostra de teste e não prova, por si só, que a proporção 85/15 seja sempre melhor.
 
 Limitações da comparação: os dois cenários mudam simultaneamente o número de exemplos disponíveis para treinar e para testar. O teste maior (40%) produz métricas calculadas em mais observações, geralmente com menor variabilidade amostral, mas deixa menos dados para o ajuste. O teste menor (15%) libera mais dados para treinamento, mas poucas previsões incorretas a mais ou a menos podem alterar as métricas de forma perceptível. Para conclusões mais robustas, seria útil repetir as divisões ou usar validação cruzada, mantendo um conjunto de teste final independente.
+
+---
+
+### Avaliação da Adequação do Desempenho do Modelo
+
+Com base nos relatórios de métricas, gráficos e matrizes de confusão gerados anteriormente, podemos avaliar criticamente o desempenho do modelo de Regressão Logística para o problema de classificação de classes de energia (`Low`, `Medium` e `High`).
+
+#### Análise dos Resultados das Métricas
+
+*   **Acurácia Global (aproximadamente 75% a 77%):**
+    O modelo superou significativamente o **baseline de acurácia (aproximadamente 48.7%)**, que representa a proporção da classe mais frequente no conjunto de teste. Isso prova que as variáveis preditoras carregam sinal útil e o modelo de fato aprendeu padrões relevantes, não realizando apenas previsões aleatórias ou tendenciosas para a classe majoritária.
+*   **Precisão Macro (aproximadamente 75% a 77%) e Recall Macro (aproximadamente 72% a 73%):**
+    Como as métricas macro calculam a média simples sem ponderar pelo suporte de cada classe, esses valores próximos à acurácia global mostram que o modelo mantém um desempenho equilibrado entre as diferentes classes, sem negligenciar completamente nenhuma delas.
+
+#### Desempenho Detalhado por Classe (Análise das Matrizes de Confusão)
+
+Analisando individualmente o comportamento das classes, identificamos padrões claros de comportamento:
+
+*   **Classe High (Alta Produção):**
+    Apresenta excelente desempenho. No Cenário 1, de 195 casos reais de classe 'High', 179 foram classificados corretamente (aproximadamente 91.7% de recall). Quase não há confusão de 'High' com 'Low' (0 casos). Isso sugere que a assinatura de alta produção de energia é muito bem delimitada pelas variáveis de entrada (como o `Efficiency_Ratio`).
+*   **Classe Low (Baixa Produção):**
+    Possui uma performance satisfatória. No Cenário 1, obteve cerca de 73% de recall (52 de 71 casos reais) e alta precisão. Pouquíssimos casos de 'Low' são confundidos como 'High' (apenas 3 casos).
+*   **Classe Medium (Média Produção):**
+    É o principal gargalo do modelo. No Cenário 1, de 134 casos reais de 'Medium', apenas 70 foram identificados corretamente (aproximadamente 52% de recall). O modelo frequentemente confunde a classe 'Medium' classificando-a como 'High' (52 casos) ou 'Low' (12 casos). Como 'Medium' é uma classe intermediária, suas fronteiras de decisão se sobrepõem naturalmente com as outras duas, dificultando uma separação perfeita por meio de um hiperplano linear.
+
+Para um algoritmo mais simples e interpretável como a Regressão Logística, obter uma acurácia superior a 75% em um problema multiclasse (onde o acaso seria 33.3% e o baseline é 48%) é um resultado robusto e adequado para a primeira iteração.
+
+---
 
 ### Discussão sobre o Tamanho do Conjunto de Teste (Vantagens e Limitações)
 
 A escolha da proporção entre dados de treino e teste representa um clássico balanço (*trade-off*) no desenvolvimento de modelos de Machine Learning, envolvendo dois aspectos conflitantes: a **qualidade do ajuste do modelo** e a **confiabilidade da avaliação da sua performance**.
 
----
-
-### Conjunto de Teste Menor (ex: 15% de teste / 85% de treino)
+#### Conjunto de Teste Menor (ex: 15% de teste / 85% de treino)
 
 *   **Vantagens:**
     *   **Mais dados para o treinamento:** O modelo tem acesso a uma maior quantidade e diversidade de exemplos para ajustar seus pesos e interceptos. Em datasets pequenos (como o nosso, com 1000 amostras), dispor de 850 dados de treino em vez de 600 é uma vantagem expressiva que permite ao estimador capturar melhor os padrões reais dos dados.
@@ -128,9 +162,7 @@ A escolha da proporção entre dados de treino e teste representa um clássico b
     *   **Menos confiabilidade estatística na avaliação:** Avaliar o modelo em apenas 150 amostras (Cenário 2) faz com que as métricas de validação sejam estatisticamente menos estáveis e altamente sensíveis a pequenas flutuações. Acertos ou erros em pouquíssimas amostras podem alterar drasticamente a acurácia, gerando uma avaliação com alta variância.
     *   **Dificuldade de representação de classes minoritárias:** Se uma das classes for muito rara, um conjunto de teste muito pequeno corre o risco de não conter amostras suficientes dela para uma avaliação de recall e precisão fidedigna.
 
----
-
-### Conjunto de Teste Maior (ex: 40% de teste / 60% de treino)
+#### Conjunto de Teste Maior (ex: 40% de teste / 60% de treino)
 
 *   **Vantagens:**
     *   **Avaliação de performance altamente confiável e estável:** Avaliar o modelo com 400 amostras (Cenário 1) garante um cálculo de métricas muito mais representativo da realidade de produção. A variância do estimador da métrica de teste é menor, significando que o resultado obtido é estatisticamente mais próximo do erro real do modelo.
@@ -138,3 +170,5 @@ A escolha da proporção entre dados de treino e teste representa um clássico b
 
 *   **Limitações:**
     *   **Privação de dados para o treino:** Ao reter 40% dos dados, restam apenas 600 amostras para o algoritmo aprender. O modelo pode não alcançar seu potencial máximo de performance simplesmente por falta de exemplos históricos suficientes no treinamento, o que pode prejudicar seu desempenho final.
+
+---
